@@ -19,15 +19,15 @@ module Diffy
       cleaned = clean_line(line)
       case line
       when /^(---|\+\+\+|\\\\)/
-        '    <li class="diff-comment"><span>' + line.chomp + '</span></li>'
+        '    <div class="diff-line diff-comment"><span>' + line.chomp + '</span></div>'
       when /^\+/
-        '    <li class="ins"><ins>' + cleaned + '</ins></li>'
+        '    <div class="diff-line ins"><ins>' + cleaned + '</ins></div>'
       when /^-/
-        '    <li class="del"><del>' + cleaned + '</del></li>'
+        '    <div class="diff-line del"><del>' + cleaned + '</del></div>'
       when /^ /
-        '    <li class="unchanged"><span>' + cleaned + '</span></li>'
+        '    <div class="diff-line unchanged"><span>' + cleaned + '</span></div>'
       when /^@@/
-        '    <li class="diff-block-info"><span>' + line.chomp + '</span></li>'
+        '    <div class="diff-line diff-block-info"><span>' + line.chomp + '</span></div>'
       end
     end
 
@@ -44,7 +44,7 @@ module Diffy
       if lines.empty?
         %'<div class="diff"></div>'
       else
-        %'<div class="diff">\n  <ul>\n#{lines.join("\n")}\n  </ul>\n</div>\n'
+        %'<div class="diff">\n  <div class="diff-wrapper">\n#{lines.join("\n")}\n  </div>\n</div>\n'
       end
     end
 
@@ -113,12 +113,12 @@ module Diffy
           end
         end
       end.join('').split("\n").map do |l|
-        type + l.gsub('</strong><strong>' , '')
+        type + l.gsub('</change><change>' , '')
       end
     end
 
     def highlight(lines)
-      "<strong>" +
+      "<change>" +
         lines.
           # strip diff tokens (e.g. +,-,etc.)
           gsub(/(^|\\n)./, '').
@@ -129,7 +129,7 @@ module Diffy
           gsub("\n", '').
           # close and reopen strong tags.  we don't want inline elements
           # spanning block elements which get added later.
-          gsub('<LINE_BOUNDARY>',"</strong>\n<strong>") + "</strong>"
+          gsub('<LINE_BOUNDARY>',"</change>\n<change>") + "</change>"
     end
   end
 end
